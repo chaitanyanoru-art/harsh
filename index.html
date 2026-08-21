@@ -11,6 +11,8 @@
 </head>
 <body>
 <main id="film">
+  <audio id="music" src="music.mp3" preload="auto" loop></audio>
+  <button id="musicToggle" class="music-toggle" aria-label="Turn music on">♪ OFF</button>
 
   <div class="noise"></div>
   <canvas id="stars"></canvas>
@@ -28,7 +30,7 @@
       <div class="typing" id="typing">Harshitha</div>
       <div class="gold-star">✦</div>
       <p class="opening-copy">Some things are better experienced<br>slowly.</p>
-      <button class="begin" data-next>BEGIN</button>
+      <button class="begin" id="beginBtn">BEGIN</button>
     </div>
   </section>
 
