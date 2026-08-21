@@ -65,3 +65,87 @@ function animate(){
   requestAnimationFrame(animate);
 }
 resize();addEventListener("resize",resize);animate();
+
+const music = document.getElementById("music");
+const musicToggle = document.getElementById("musicToggle");
+let musicOn = false;
+let fadeTimer = null;
+
+function updateMusicButton() {
+  musicToggle.textContent = musicOn ? "♪ ON" : "♪ OFF";
+  musicToggle.setAttribute(
+    "aria-label",
+    musicOn ? "Turn music off" : "Turn music on"
+  );
+}
+
+function fadeMusic(target, duration = 1400) {
+  if (!music) return;
+  clearInterval(fadeTimer);
+  const start = music.volume;
+  const delta = target - start;
+  const steps = 28;
+  let step = 0;
+  fadeTimer = setInterval(() => {
+    step++;
+    music.volume = Math.max(0, Math.min(1, start + delta * (step / steps)));
+    if (step >= steps) clearInterval(fadeTimer);
+  }, Math.max(20, duration / steps));
+}
+
+async function startMusic() {
+  if (!music) return;
+  try {
+    music.volume = 0;
+    await music.play();
+    musicOn = true;
+    updateMusicButton();
+    fadeMusic(0.34, 1800);
+  } catch (err) {
+    musicOn = false;
+    updateMusicButton();
+  }
+}
+
+function stopMusic() {
+  if (!music) return;
+  fadeMusic(0, 700);
+  setTimeout(() => music.pause(), 750);
+  musicOn = false;
+  updateMusicButton();
+}
+
+musicToggle.addEventListener("click", async () => {
+  if (musicOn) stopMusic();
+  else await startMusic();
+});
+
+document.getElementById("beginBtn").addEventListener("click", async () => {
+  await startMusic();
+  next();
+});
+
+const originalShow = show;
+show = function(index) {
+  originalShow(index);
+  if (!music || !musicOn) return;
+
+  // Quiet for the hidden-star scene; return to a warm level for the finale.
+  if (index === 5) {
+    fadeMusic(0.06, 900);
+  } else if (index === 6) {
+    fadeMusic(0.42, 1600);
+  } else if (index === 4) {
+    fadeMusic(0.30, 900);
+  } else {
+    fadeMusic(0.34, 900);
+  }
+};
+
+document.getElementById("replay").addEventListener("click", () => {
+  if (musicOn) {
+    music.currentTime = 0;
+    fadeMusic(0.34, 900);
+  }
+});
+updateMusicButton();
