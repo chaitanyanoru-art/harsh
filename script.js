@@ -1,17 +1,11 @@
-/* =========================
-   SMOOTH NAVIGATION
-========================= */
-
 function scrollToSection(id) {
+    const section = document.getElementById(id);
 
-    const section =
-        document.getElementById(id);
-
-    if (!section) return;
-
-    section.scrollIntoView({
-        behavior: "smooth"
-    });
+    if (section) {
+        section.scrollIntoView({
+            behavior: "smooth"
+        });
+    }
 }
 
 
@@ -19,143 +13,90 @@ function scrollToSection(id) {
    SCROLL REVEAL
 ========================= */
 
-const revealElements =
-    document.querySelectorAll(".reveal");
+const revealElements = document.querySelectorAll(".reveal");
 
-const observer =
-    new IntersectionObserver(
-        (entries) => {
+const observer = new IntersectionObserver(
+    (entries) => {
 
-            entries.forEach(
-                (entry) => {
+        entries.forEach((entry) => {
 
-                    if (
-                        entry.isIntersecting
-                    ) {
+            if (entry.isIntersecting) {
+                entry.target.classList.add("visible");
+            }
 
-                        entry.target.classList.add(
-                            "visible"
-                        );
+        });
 
-                    }
-
-                }
-            );
-
-        },
-        {
-            threshold: 0.15
-        }
-    );
-
-
-revealElements.forEach(
-    (element) => {
-
-        observer.observe(element);
-
+    },
+    {
+        threshold: 0.1
     }
 );
 
+revealElements.forEach((element) => {
+    observer.observe(element);
+});
+
 
 /* =========================
-   STARFIELD
+   STAR BACKGROUND
 ========================= */
 
-const canvas =
-    document.getElementById("stars");
+const canvas = document.getElementById("stars");
 
-const ctx =
-    canvas.getContext("2d");
+if (canvas) {
 
-let width;
-let height;
+    const ctx = canvas.getContext("2d");
 
-let stars = [];
+    let width;
+    let height;
+    let stars = [];
+
+    function resizeCanvas() {
+
+        width = window.innerWidth;
+        height = window.innerHeight;
+
+        canvas.width = width;
+        canvas.height = height;
+
+        stars = [];
+
+        for (let i = 0; i < 130; i++) {
+
+            stars.push({
+                x: Math.random() * width,
+                y: Math.random() * height,
+                radius: Math.random() * 1.2 + 0.2,
+                speed: Math.random() * 0.2 + 0.03,
+                opacity: Math.random() * 0.7 + 0.2
+            });
+
+        }
+    }
 
 
-function resizeCanvas() {
+    function animateStars() {
 
-    width =
-        canvas.width =
-        window.innerWidth;
-
-    height =
-        canvas.height =
-        window.innerHeight;
-
-
-    stars =
-        Array.from(
-            {
-                length: 130
-            },
-
-            () => ({
-
-                x:
-                    Math.random()
-                    * width,
-
-                y:
-                    Math.random()
-                    * height,
-
-                radius:
-                    0.2 +
-                    Math.random()
-                    * 1.2,
-
-                speed:
-                    0.03 +
-                    Math.random()
-                    * 0.2,
-
-                opacity:
-                    0.2 +
-                    Math.random()
-                    * 0.7
-
-            })
+        ctx.clearRect(
+            0,
+            0,
+            width,
+            height
         );
-}
 
+        stars.forEach((star) => {
 
-function animateStars() {
-
-    ctx.clearRect(
-        0,
-        0,
-        width,
-        height
-    );
-
-
-    stars.forEach(
-        (star) => {
-
-            star.y -=
-                star.speed;
-
+            star.y -= star.speed;
 
             if (star.y < 0) {
-
-                star.y =
-                    height;
-
+                star.y = height;
             }
 
+            ctx.globalAlpha = star.opacity;
 
-            ctx.globalAlpha =
-                star.opacity;
-
-
-            ctx.fillStyle =
-                "#d7cdbf";
-
+            ctx.fillStyle = "#d7cdbf";
 
             ctx.beginPath();
-
 
             ctx.arc(
                 star.x,
@@ -165,24 +106,20 @@ function animateStars() {
                 Math.PI * 2
             );
 
-
             ctx.fill();
 
-        }
-    );
+        });
+
+        requestAnimationFrame(animateStars);
+    }
 
 
-    requestAnimationFrame(
-        animateStars
+    resizeCanvas();
+
+    window.addEventListener(
+        "resize",
+        resizeCanvas
     );
+
+    animateStars();
 }
-
-
-resizeCanvas();
-
-window.addEventListener(
-    "resize",
-    resizeCanvas
-);
-
-animateStars();
